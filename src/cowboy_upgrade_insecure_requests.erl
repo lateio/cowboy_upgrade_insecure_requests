@@ -1,11 +1,20 @@
 -module(cowboy_upgrade_insecure_requests).
 
--vsn(0).
+-vsn(1).
 
 %% API exports
 -behavior(cowboy_middleware).
 -export([execute/2]).
 
+-ifdef(OTP_RELEASE).
+% OTP21
+-define(LOGGER_MOD, logger).
+-define(LOGGER_FUNC, error).
+-else.
+% Older
+-define(LOGGER_MOD, error_logger).
+-define(LOGGER_FUNC, error_msg).
+-endif.
 
 % ------------------------------------------------------------------------------
 %
@@ -75,9 +84,10 @@ to_uri_opts(Req, Env = #{'Upgrade-Insecure-Requests' := EnvOpts}) ->
                 undefined -> Map;
                 Value -> Map#{Key => Value}
             end
-        end, #{port => undefined}, [host, port, path, qs, fragment]),
+        end,
+        #{port => undefined}, [host, port, path, qs, fragment]),
     Opts#{scheme => <<"https">>};
-to_uri_opts(_, #{}) ->
+to_uri_opts(_, _) ->
     #{scheme => <<"https">>, port => undefined}.
 
 
@@ -86,7 +96,7 @@ reply_status(Req, Env = #{'Upgrade-Insecure-Requests' := EnvOpts}) ->
         {M,F,A} ->
             case apply(M,F,[Req, Env|A]) of
                 Tuple = {_, _, _} ->
-                    logger:error("upgrade_insecure_requests applying {M,F,A} in reply_status returned another tuple (~p). Infinite loop?", [Tuple]),
+                    ?LOGGER_MOD:?LOGGER_FUNC("upgrade_insecure_requests after applying {M,F,A} in reply_status returned another tuple (~p). Loop?", [Tuple]),
                     307;
                 Status -> reply_status(Req, Env#{'Upgrade-Insecure-Requests' => EnvOpts#{reply_status => Status}})
             end;
@@ -96,7 +106,7 @@ reply_status(Req, Env = #{'Upgrade-Insecure-Requests' := EnvOpts}) ->
         307 -> 307;
         308 -> 308;
         Code ->
-            logger:error("upgrade_insecure_requests middleware can only return a subset of 300-status codes. ~p is not one of them", [Code]),
+            ?LOGGER_MOD:?LOGGER_FUNC("upgrade_insecure_requests middleware can only return a subset of 300-status codes. ~p is not one of them", [Code]),
             307
     end;
 reply_status(_, _) ->

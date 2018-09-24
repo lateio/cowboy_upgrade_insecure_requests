@@ -1,6 +1,6 @@
 {application, cowboy_upgrade_insecure_requests,
  [{description, "Upgrade insecure requests in cowboy http server"},
-  {vsn, "0.0.0"},
+  {vsn, "0.0.1"},
   {registered, []},
   {applications,
    [kernel,
