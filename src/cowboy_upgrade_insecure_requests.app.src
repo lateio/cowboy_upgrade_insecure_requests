@@ -11,5 +11,5 @@
 
   {maintainers, ["Lauri Moisio"]},
   {licenses, ["MIT"]},
-  {links, ["https://github.com/lateio/upgrade_insecure_requests"]}
+  {links, ["https://github.com/lateio/cowboy_upgrade_insecure_requests"]}
  ]}.

@@ -16,6 +16,7 @@ Behavior
 When this middleware executes on an http request with a header `Upgrade-Insecure-Requests: 1`, further request handling is forgone and an http redirect response to an https uri is returned. This middleware will not act on https requests. Thus the same middleware configuration can be used for both `cowboy_clear:start()` and `cowboy_tls:start()` if such a configuration is desirable.
 
 By default the reply status code will be `307 Temporary Redirect`
+
 By default the the middleware will merely swap the scheme of the the current request uri from http to https.
 ```
 http://arv.io/path?query -> https://arv.io/path?query
@@ -40,7 +41,7 @@ Opts = #{env => #{'Upgrade-Insecure-Requests' => RedirOpts, ...}},
 
 Following keys can be defined in this map. *All keys are optional*.
 * `'host'` - Override the host in redirect uri
-* `'port'` - Override the port in redirect uri
+* `'port'` - Override the port in redirect uri, use `'undefined'` for https default port
 * `'path'` - Override the path in redirect uri
 * `'qs'` - Override the query in redirect uri
 * `'fragment'` - Add a fragment to redirect uri
