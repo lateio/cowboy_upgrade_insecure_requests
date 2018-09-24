@@ -17,7 +17,7 @@ When this middleware executes on an http request with a header `Upgrade-Insecure
 
 By default the reply status code will be `307 Temporary Redirect`
 
-By default the the middleware will merely swap the scheme of the the current request uri from http to https.
+By default the middleware will merely swap the scheme of the the current request uri from http to https.
 ```
 http://arv.io/path?query -> https://arv.io/path?query
 ```
